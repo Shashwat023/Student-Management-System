@@ -1,0 +1,20 @@
+export const ERRORS = {
+  INVALID_CREDENTIALS: 'Invalid email or password',
+  USER_NOT_FOUND: 'User not found',
+  EMAIL_EXISTS: 'Email already exists',
+  INVALID_OTP: 'Invalid OTP',
+  OTP_EXPIRED: 'OTP has expired',
+  TOKEN_EXPIRED: 'Token has expired',
+  INVALID_TOKEN: 'Invalid token',
+  SERVER_ERROR: 'Internal server error',
+  VALIDATION_ERROR: 'Validation error',
+  UNAUTHORIZED: 'Unauthorized access',
+  FORBIDDEN: 'Access forbidden',
+  USER_ALREADY_EXISTS: 'User already exists',
+  ROLL_NUMBER_EXISTS: 'Roll number already exists',
+  DATABASE_ERROR: 'Database operation failed',
+  EMAIL_SEND_FAILED: 'Failed to send email',
+  WEAK_PASSWORD: 'Password is too weak',
+  INVALID_EMAIL: 'Invalid email format',
+  ATTENDANCE_NOT_FOUND: 'Attendance record not found'
+};

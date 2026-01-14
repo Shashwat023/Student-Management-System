@@ -4,42 +4,40 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { motion } from "framer-motion"
 import Link from "next/link"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Alert as ShadcnAlert, AlertDescription } from "@/components/ui/alert" // Renamed to avoid conflict
-import { AlertCircle, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { GoogleLogin } from "@react-oauth/google"
 import { apiClient } from "@/lib/api-client"
-import { Snackbar, Alert } from "@mui/material" // New import
+import { Snackbar, Alert } from "@mui/material"
+import OtpVerifyPage from "@/components/features/auth/otp-verify"
 
 export default function AdminLoginPage() {
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
   const [showError, setShowError] = useState(false)
-  const router = useRouter()
+  const [errorMessage, setErrorMessage] = useState("")
+  const [showOtpPage, setShowOtpPage] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError("")
     setLoading(true)
+    setErrorMessage("")
 
     try {
-      // Use admin login endpoint (assuming it exists or uses same login with role)
-      const response = await apiClient.auth.login(email, password)
-
-      // Store admin token and role
-      localStorage.setItem("adminToken", response.accessToken)
-      localStorage.setItem("userRole", "admin")
-      localStorage.setItem("adminEmail", email)
-
-      router.push("/admin/dashboard")
-    } catch (err: any) {
-      setError("Wrong email or password")
+      // Step 1: Request OTP
+      await apiClient.auth.requestLoginOtp(email, password)
+      // Show OTP verification page
+      setShowOtpPage(true)
+    } catch (error: any) {
+      setErrorMessage("Wrong email or password")
       setShowError(true)
     } finally {
       setLoading(false)
@@ -47,7 +45,7 @@ export default function AdminLoginPage() {
   }
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
-    setError("")
+    setErrorMessage("")
     setLoading(true)
 
     try {
@@ -64,11 +62,22 @@ export default function AdminLoginPage() {
 
       router.push("/admin/dashboard")
     } catch (err: any) {
-      setError(err.message || "Google login failed. Please try again.")
+      setErrorMessage(err.message || "Google login failed. Please try again.")
       setShowError(true)
     } finally {
       setLoading(false)
     }
+  }
+
+  // Show OTP verification page if OTP was requested
+  if (showOtpPage) {
+    return (
+      <OtpVerifyPage
+        email={email}
+        onBack={() => setShowOtpPage(false)}
+        role="admin"
+      />
+    )
   }
 
   return (
@@ -140,7 +149,7 @@ export default function AdminLoginPage() {
           <div className="flex justify-center">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
-              onError={() => setError("Google login failed")}
+              onError={() => setErrorMessage("Google login failed")}
               theme="filled_blue"
               size="large"
               width="384px"
@@ -187,7 +196,7 @@ export default function AdminLoginPage() {
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert onClose={() => setShowError(false)} severity="error" sx={{ width: '100%' }}>
-          {error}
+          {errorMessage}
         </Alert>
       </Snackbar>
     </main>

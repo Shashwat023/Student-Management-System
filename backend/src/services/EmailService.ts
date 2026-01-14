@@ -59,6 +59,43 @@ export class EmailService {
     })
   }
 
+  // Send OTP for login verification
+  async sendLoginOtp(email: string, otp: string): Promise<void> {
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
+        <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+          <h2 style="color: #1f2937; margin-bottom: 20px;">🔐 Login Verification Code</h2>
+          <p style="color: #4b5563; font-size: 16px;">Your one-time password (OTP) for login is:</p>
+          
+          <div style="background-color: #eff6ff; padding: 25px; border-radius: 8px; text-align: center; margin: 25px 0; border: 2px dashed #2563eb;">
+            <h1 style="color: #2563eb; letter-spacing: 10px; font-size: 48px; margin: 0; font-weight: bold;">${otp}</h1>
+          </div>
+          
+          <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px;">
+            <p style="color: #92400e; margin: 0; font-size: 14px;"><strong>⏱️ Valid for 10 minutes</strong></p>
+            <p style="color: #b45309; margin: 5px 0 0 0; font-size: 12px;">This code will expire shortly for your security.</p>
+          </div>
+          
+          <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0; border-radius: 4px;">
+            <p style="color: #991b1b; margin: 0; font-size: 14px;"><strong>🚨 Security Warning</strong></p>
+            <p style="color: #b91c1c; margin: 5px 0 0 0; font-size: 12px;">Never share this code with anyone. Our team will never ask for your OTP.</p>
+          </div>
+          
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+          <p style="color: #9ca3af; font-size: 12px;">If you didn't request this code, please ignore this email or contact support immediately.</p>
+          <p style="color: #9ca3af; font-size: 12px; margin-top: 10px;">This is an automated message from Student Management System.</p>
+        </div>
+      </div>
+    `
+
+    await this.transporter.sendMail({
+      to: email,
+      subject: "Your Login OTP - Student Management System",
+      html: htmlContent,
+      text: `Your login verification code is: ${otp}. This code expires in 10 minutes. Never share this code with anyone.`,
+    })
+  }
+
   async sendPasswordResetEmail(email: string, resetToken: string): Promise<void> {
     const resetLink = `${process.env.FRONTEND_URL || "http://localhost:3000"}/auth/reset-password?token=${resetToken}`
 

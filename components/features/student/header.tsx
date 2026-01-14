@@ -54,7 +54,7 @@ export function StudentHeader() {
             variant="outline"
             size="sm"
             onClick={handleLogout}
-            className="flex items-center space-x-2 border-slate-600 text-slate-300 hover:bg-slate-700"
+            className="flex items-center space-x-2 bg-white/10 border-slate-600 text-slate-300 hover:bg-white/20 hover:text-white transition-colors"
           >
             <LogOut className="h-4 w-4" />
             <span>Logout</span>

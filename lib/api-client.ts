@@ -128,6 +128,19 @@ export const apiClient = {
         method: "POST",
         body: JSON.stringify({ credential, role }),
       }),
+
+    // 2-Step OTP Login
+    requestLoginOtp: (email: string, password: string) =>
+      apiClient.request("/api/auth/login/request-otp", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      }),
+
+    verifyLoginOtp: (email: string, otp: string) =>
+      apiClient.request("/api/auth/login/verify-otp", {
+        method: "POST",
+        body: JSON.stringify({ email, otp }),
+      }),
   },
 
   // Attendance endpoints

@@ -17,6 +17,7 @@ import { AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, Loader2 } from "lucide-react"
 import { GoogleLogin } from "@react-oauth/google"
 import { apiClient } from "@/lib/api-client"
+import OtpVerifyPage from "./otp-verify"
 
 export function LoginForm() {
   const [email, setEmail] = useState("")
@@ -24,6 +25,7 @@ export function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [showError, setShowError] = useState(false)
+  const [showOtpPage, setShowOtpPage] = useState(false)
   const router = useRouter()
   const { login } = useAuth()
 
@@ -33,8 +35,10 @@ export function LoginForm() {
     setLoading(true)
 
     try {
-      await login(email, password)
-      router.push("/student/dashboard")
+      // Step 1: Request OTP
+      await apiClient.auth.requestLoginOtp(email, password)
+      // Show OTP verification page
+      setShowOtpPage(true)
     } catch (err: any) {
       setError("Wrong email or password")
       setShowError(true)
@@ -64,6 +68,17 @@ export function LoginForm() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Show OTP verification page if OTP was requested
+  if (showOtpPage) {
+    return (
+      <OtpVerifyPage
+        email={email}
+        onBack={() => setShowOtpPage(false)}
+        role="student"
+      />
+    )
   }
 
   return (
